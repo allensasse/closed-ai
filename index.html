@@ -3,3 +3,1071 @@
 <head>
   </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Closed AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f7f9;
+      color: #172033;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* AUTH */
+
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #f6f7f9;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 15px 50px rgba(0,0,0,.10);
+      border: 1px solid #e3e6eb;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .logo span {
+      color: #377dff;
+    }
+
+    .auth-card h1 {
+      margin: 0 0 8px;
+      font-size: 25px;
+    }
+
+    .auth-subtitle {
+      color: #687386;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d8dde5;
+      border-radius: 9px;
+      outline: none;
+      background: white;
+    }
+
+    .field input:focus {
+      border-color: #377dff;
+      box-shadow: 0 0 0 3px rgba(55,125,255,.12);
+    }
+
+    .primary-button {
+      width: 100%;
+      border: 0;
+      background: #377dff;
+      color: white;
+      padding: 13px;
+      border-radius: 9px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    .primary-button:hover {
+      background: #2869df;
+    }
+
+    .switch-auth {
+      text-align: center;
+      margin-top: 18px;
+      color: #687386;
+      font-size: 14px;
+    }
+
+    .switch-auth span {
+      color: #2463d8;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .error {
+      display: none;
+      background: #fff0f0;
+      border: 1px solid #ffd1d1;
+      color: #c23737;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .demo-note {
+      text-align: center;
+      color: #8a93a2;
+      font-size: 12px;
+      margin-top: 18px;
+    }
+
+    /* APP */
+
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 245px;
+      background: white;
+      border-right: 1px solid #e2e5ea;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 25px;
+    }
+
+    .sidebar-logo span {
+      color: #377dff;
+    }
+
+    .new-chat {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #dce1e8;
+      background: white;
+      border-radius: 9px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .new-chat:hover {
+      background: #f4f7fb;
+    }
+
+    .nav-button {
+      width: 100%;
+      padding: 11px 12px;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      border-radius: 9px;
+      color: #596579;
+      margin: 2px 0;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: #eef4ff;
+      color: #2463d8;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid #eceef2;
+      padding-top: 15px;
+    }
+
+    .logout {
+      width: 100%;
+      padding: 10px;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      border-radius: 9px;
+      color: #596579;
+    }
+
+    .logout:hover {
+      background: #fff1f1;
+      color: #d33b3b;
+    }
+
+    .account-info {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #7a8494;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 64px;
+      background: white;
+      border-bottom: 1px solid #e2e5ea;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .top-title {
+      font-weight: 700;
+    }
+
+    .test-label {
+      font-size: 12px;
+      background: #eef4ff;
+      color: #2463d8;
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+
+    .avatar {
+      width: 37px;
+      height: 37px;
+      border-radius: 50%;
+      background: #377dff;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px 25px 120px;
+    }
+
+    .chat-container {
+      width: min(900px, 100%);
+      margin: auto;
+    }
+
+    .welcome {
+      text-align: center;
+      margin: 55px auto 35px;
+    }
+
+    .welcome h1 {
+      font-size: 34px;
+      margin: 0 0 10px;
+    }
+
+    .welcome p {
+      color: #697586;
+      margin: 0;
+    }
+
+    .feature-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .feature {
+      background: white;
+      border: 1px solid #e0e4eb;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #596579;
+      font-size: 13px;
+    }
+
+    .messages {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      max-width: 78%;
+      padding: 13px 16px;
+      border-radius: 15px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #377dff;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background: white;
+      border: 1px solid #e1e5ea;
+      border-bottom-left-radius: 4px;
+    }
+
+    .composer {
+      position: fixed;
+      bottom: 20px;
+      left: calc(245px + (100% - 245px) / 2 - 400px);
+      width: 800px;
+      max-width: calc(100% - 285px);
+      background: white;
+      border: 1px solid #dce1e8;
+      border-radius: 14px;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.07);
+    }
+
+    .composer input {
+      flex: 1;
+      border: 0;
+      outline: 0;
+      padding: 12px;
+      background: transparent;
+    }
+
+    .send-button {
+      border: 0;
+      background: #377dff;
+      color: white;
+      border-radius: 9px;
+      padding: 0 19px;
+      font-weight: 700;
+    }
+
+    .send-button:hover {
+      background: #2869df;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 750px) {
+      .sidebar {
+        display: none;
+      }
+
+      .composer {
+        left: 15px;
+        width: auto;
+        max-width: calc(100% - 30px);
+      }
+
+      .chat-area {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .welcome h1 {
+        font-size: 28px;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="root"></div>
+
+<script>
+/* =========================================
+   CLOSED AI
+   Browser Demo
+   ========================================= */
+
+const ACCOUNTS_KEY = "closed_ai_accounts";
+const SESSION_KEY = "closed_ai_session";
+
+let accounts = JSON.parse(
+  localStorage.getItem(ACCOUNTS_KEY) || "{}"
+);
+
+let currentUserId = localStorage.getItem(SESSION_KEY);
+
+let messages = [];
+
+
+/* =========================================
+   HELPERS
+   ========================================= */
+
+function saveAccounts() {
+  localStorage.setItem(
+    ACCOUNTS_KEY,
+    JSON.stringify(accounts)
+  );
+}
+
+function escapeHTML(text) {
+  return String(text).replace(/[&<>"']/g, function(char) {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    };
+
+    return map[char];
+  });
+}
+
+function getCurrentUser() {
+  return accounts[currentUserId];
+}
+
+function showError(message) {
+  const error = document.getElementById("error");
+
+  if (!error) return;
+
+  error.textContent = message;
+  error.style.display = "block";
+}
+
+
+/* =========================================
+   ACCOUNT SCREEN
+   ========================================= */
+
+function showAuthScreen(loginMode = false) {
+
+  document.getElementById("root").innerHTML = `
+    <div class="auth-screen">
+
+      <div class="auth-card">
+
+        <div class="logo">
+          Closed <span>AI</span>
+        </div>
+
+        <h1>
+          ${loginMode ? "Welcome back" : "Create your account"}
+        </h1>
+
+        <div class="auth-subtitle">
+          ${
+            loginMode
+              ? "Log in to your Closed AI account."
+              : "Create an account to start using Closed AI."
+          }
+        </div>
+
+        <div id="error" class="error"></div>
+
+        ${
+          loginMode
+            ? ""
+            : `
+              <div class="field">
+                <label>Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                >
+              </div>
+            `
+        }
+
+        <div class="field">
+          <label>Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+          >
+        </div>
+
+        ${
+          loginMode
+            ? ""
+            : `
+              <div class="field">
+                <label>Phone number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                >
+              </div>
+            `
+        }
+
+        <div class="field">
+          <label>Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="At least 6 characters"
+          >
+        </div>
+
+        <button
+          class="primary-button"
+          onclick="${loginMode ? "login()" : "createAccount()"}"
+        >
+          ${loginMode ? "Log in" : "Create account"}
+        </button>
+
+        <div class="switch-auth">
+          ${
+            loginMode
+              ? "Don't have an account?"
+              : "Already have an account?"
+          }
+
+          <span onclick="showAuthScreen(${!loginMode})">
+            ${loginMode ? "Create one" : "Log in"}
+          </span>
+        </div>
+
+        <div class="demo-note">
+          This is a browser demo. Account information is stored
+          locally on this device.
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================
+   CREATE ACCOUNT
+   ========================================= */
+
+function createAccount() {
+
+  const name =
+    document.getElementById("name").value.trim();
+
+  const email =
+    document.getElementById("email").value.trim().toLowerCase();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+
+  if (!name || !email || !phone || !password) {
+    showError("Please fill in every field.");
+    return;
+  }
+
+
+  if (!email.includes("@")) {
+    showError("Please enter a valid email address.");
+    return;
+  }
+
+
+  if (password.length < 6) {
+    showError(
+      "Your password must be at least 6 characters."
+    );
+
+    return;
+  }
+
+
+  const alreadyExists =
+    Object.values(accounts).some(
+      account => account.email === email
+    );
+
+
+  if (alreadyExists) {
+    showError(
+      "An account with that email already exists."
+    );
+
+    return;
+  }
+
+
+  const id =
+    Date.now().toString() +
+    Math.random().toString(16).slice(2);
+
+
+  accounts[id] = {
+    id: id,
+    name: name,
+    email: email,
+    phone: phone,
+    password: password
+  };
+
+
+  saveAccounts();
+
+
+  currentUserId = id;
+
+  localStorage.setItem(
+    SESSION_KEY,
+    currentUserId
+  );
+
+
+  messages = [];
+
+  renderApp();
+}
+
+
+/* =========================================
+   LOGIN
+   ========================================= */
+
+function login() {
+
+  const email =
+    document.getElementById("email").value.trim().toLowerCase();
+
+  const password =
+    document.getElementById("password").value;
+
+
+  const userId =
+    Object.keys(accounts).find(id => {
+
+      const account = accounts[id];
+
+      return (
+        account.email === email &&
+        account.password === password
+      );
+
+    });
+
+
+  if (!userId) {
+    showError(
+      "Incorrect email or password."
+    );
+
+    return;
+  }
+
+
+  currentUserId = userId;
+
+  localStorage.setItem(
+    SESSION_KEY,
+    currentUserId
+  );
+
+
+  messages = [];
+
+  renderApp();
+}
+
+
+/* =========================================
+   LOGOUT
+   ========================================= */
+
+function logout() {
+
+  currentUserId = null;
+
+  localStorage.removeItem(
+    SESSION_KEY
+  );
+
+  messages = [];
+
+  showAuthScreen(true);
+}
+
+
+/* =========================================
+   MAIN APP
+   ========================================= */
+
+function renderApp() {
+
+  const user = getCurrentUser();
+
+  if (!user) {
+    showAuthScreen();
+    return;
+  }
+
+
+  document.getElementById("root").innerHTML = `
+
+    <div class="app">
+
+      <aside class="sidebar">
+
+        <div class="sidebar-logo">
+          Closed <span>AI</span>
+        </div>
+
+        <button
+          class="new-chat"
+          onclick="newChat()"
+        >
+          ＋ New chat
+        </button>
+
+
+        <button
+          class="nav-button active"
+          onclick="newChat()"
+        >
+          💬 Chat
+        </button>
+
+
+        <button
+          class="nav-button"
+          onclick="testTool('Web Search')"
+        >
+          🔎 Web Search
+        </button>
+
+
+        <button
+          class="nav-button"
+          onclick="testTool('Image Studio')"
+        >
+          🖼️ Image Studio
+        </button>
+
+
+        <button
+          class="nav-button"
+          onclick="testTool('Video Studio')"
+        >
+          🎬 Video Studio
+        </button>
+
+
+        <button
+          class="nav-button"
+          onclick="testTool('Files')"
+        >
+          📁 Files
+        </button>
+
+
+        <div class="sidebar-bottom">
+
+          <button
+            class="logout"
+            onclick="logout()"
+          >
+            ↪ Log out
+          </button>
+
+
+          <div class="account-info">
+
+            <strong>
+              ${escapeHTML(user.name)}
+            </strong>
+
+            <br>
+
+            ${escapeHTML(user.email)}
+
+            <br>
+
+            ${escapeHTML(user.phone)}
+
+          </div>
+
+        </div>
+
+      </aside>
+
+
+      <main class="main">
+
+        <header class="topbar">
+
+          <div class="top-title">
+            Closed AI
+            <span class="test-label">
+              TEST
+            </span>
+          </div>
+
+          <div class="avatar">
+            ${escapeHTML(
+              user.name.charAt(0).toUpperCase()
+            )}
+          </div>
+
+        </header>
+
+
+        <div class="chat-area">
+
+          <div class="chat-container">
+
+            <div class="welcome">
+
+              <h1>
+                What can I help with?
+              </h1>
+
+              <p>
+                Welcome to Closed AI, ${escapeHTML(user.name)}.
+              </p>
+
+
+              <div class="feature-row">
+
+                <div class="feature">
+                  AI Chat
+                </div>
+
+                <div class="feature">
+                  Web Search
+                </div>
+
+                <div class="feature">
+                  Images
+                </div>
+
+                <div class="feature">
+                  Files
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="messages"
+              class="messages"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="composer">
+
+          <input
+            id="messageInput"
+            type="text"
+            placeholder="Message Closed AI..."
+            onkeydown="
+              if(event.key === 'Enter') {
+                sendMessage();
+              }
+            "
+          >
+
+          <button
+            class="send-button"
+            onclick="sendMessage()"
+          >
+            Send
+          </button>
+
+        </div>
+
+      </main>
+
+    </div>
+  `;
+
+
+  drawMessages();
+}
+
+
+/* =========================================
+   SEND MESSAGE
+   ========================================= */
+
+function sendMessage() {
+
+  const input =
+    document.getElementById("messageInput");
+
+  if (!input) return;
+
+
+  const text =
+    input.value.trim();
+
+
+  if (!text) return;
+
+
+  messages.push({
+    type: "user",
+    text: text
+  });
+
+
+  input.value = "";
+
+  drawMessages();
+
+
+  setTimeout(function() {
+
+    messages.push({
+      type: "ai",
+      text:
+        "This is a test response from Closed AI. " +
+        "Your account is working successfully! " +
+        "The next step would be connecting this " +
+        "interface to a real AI backend."
+    });
+
+
+    drawMessages();
+
+  }, 500);
+
+}
+
+
+/* =========================================
+   DRAW MESSAGES
+   ========================================= */
+
+function drawMessages() {
+
+  const container =
+    document.getElementById("messages");
+
+
+  if (!container) return;
+
+
+  container.innerHTML =
+    messages.map(function(message) {
+
+      return `
+        <div
+          class="message ${
+            message.type === "user"
+              ? "user"
+              : "ai"
+          }"
+        >
+          ${escapeHTML(message.text)}
+        </div>
+      `;
+
+    }).join("");
+
+
+  container.scrollTop =
+    container.scrollHeight;
+}
+
+
+/* =========================================
+   NEW CHAT
+   ========================================= */
+
+function newChat() {
+
+  messages = [];
+
+  renderApp();
+}
+
+
+/* =========================================
+   TEST TOOLS
+   ========================================= */
+
+function testTool(toolName) {
+
+  messages.push({
+    type: "ai",
+    text:
+      toolName +
+      " is available in the Closed AI test interface. " +
+      "This demo button is ready to be connected to " +
+      "a real backend."
+  });
+
+
+  drawMessages();
+}
+
+
+/* =========================================
+   START APP
+   ========================================= */
+
+if (
+  currentUserId &&
+  accounts[currentUserId]
+) {
+
+  renderApp();
+
+} else {
+
+  showAuthScreen(false);
+
+}
+
+</script>
+
+</body>
+</html>
