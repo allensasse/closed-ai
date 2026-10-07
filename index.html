@@ -6,10 +6,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <!DOCTYPE html>
-<html lang="en">
-<head> 
-<!doctype html>
+  <!DOCTYPE html>
+  <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Closed AI</title>
 <style>
@@ -34,7 +32,24 @@ function applyTheme(){document.body.classList.toggle("dark",localStorage.getItem
 function toggleTheme(){localStorage.setItem(T,document.body.classList.contains("dark")?"light":"dark");applyTheme()}
 function auth(login=false){root.innerHTML='<div class="auth"><div class="authbox"><div class="logo">Closed <span>AI</span></div><h1>'+(login?"Welcome back":"Create your account")+'</h1><p style="color:var(--muted)">'+(login?"Sign in to continue.":"Create an account to use Closed AI.")+'</p><div id="err" class="error"></div>'+(login?"":'<div class="field"><label>Name</label><input id="name" placeholder="Your name"></div>')+'<div class="field"><label>Email</label><input id="email" type="email" placeholder="you@example.com"></div>'+(login?"":'<div class="field"><label>Phone number</label><input id="phone" placeholder="(555) 123-4567"></div>')+'<div class="field"><label>Password</label><input id="pw" type="password" placeholder="At least 6 characters"></div><button class="primary" onclick="'+(login?"login()":"signup()")+'">'+(login?"Log in":"Create account")+'</button><div class="switch">'+(login?"Don't have an account?":"Already have an account?")+' <span onclick="auth('+(login?"false":"true")+')">'+(login?"Create one":"Log in")+'</span></div><div class="note">This browser version stores account data locally. Do not use a real password.</div></div></div>'}
 function bad(t){err.textContent=t;err.style.display="block"}
-function signup(){let n=name.value.trim(),e=email.value.trim().toLowerCase(),p=phone.value.trim(),w=pw.value;if(!n||!e||!p||!w)return bad("Please fill in every field.");if(!e.includes("@"))return bad("Enter a valid email.");if(w.length<6)return bad("Password must be at least 6 characters.");if(Object.values(accounts).some(a=>a.email===e))return bad("That email is already registered.");let id=String(Date.now());accounts[id]={name:n,email:e,phone:p,password:w};save();session=id;localStorage.setItem(S,id);messages=[];saveChats();render()}
+function signup(){
+  const n=document.getElementById("name").value.trim();
+  const e=document.getElementById("email").value.trim().toLowerCase();
+  const p=document.getElementById("phone").value.trim();
+  const w=document.getElementById("pw").value;
+  if(!n||!e||!p||!w)return bad("Please fill in every field.");
+  if(!e.includes("@"))return bad("Enter a valid email.");
+  if(w.length<6)return bad("Password must be at least 6 characters.");
+  if(Object.values(accounts).some(a=>a.email===e))return bad("That email is already registered.");
+  const id=String(Date.now());
+  accounts[id]={name:n,email:e,phone:p,password:w};
+  save();
+  session=id;
+  localStorage.setItem(S,id);
+  messages=[];
+  saveChats();
+  render();
+}
 function login(){let e=email.value.trim().toLowerCase(),w=pw.value,id=Object.keys(accounts).find(k=>accounts[k].email===e&&accounts[k].password===w);if(!id)return bad("Incorrect email or password.");session=id;localStorage.setItem(S,id);messages=chats[id]||[];render()}
 function logout(){session=null;localStorage.removeItem(S);messages=[];auth(true)}
 function render(){let a=accounts[session];if(!a)return auth();root.innerHTML='<div class="app"><aside class="side"><div class="logo">Closed <span>AI</span></div><button class="new" onclick="newChat()">＋ New chat</button><button class="nav" onclick="home()">⌂ New chat</button><button class="nav" onclick="tool(\'Search\')">⌕ Search</button><button class="nav" onclick="tool(\'Images\')">▧ Images</button><button class="nav" onclick="tool(\'Files\')">▤ Files</button><div class="spacer"></div><button class="nav" onclick="plus()">✦ Closed Plus</button><button class="theme" onclick="toggleTheme()">◐ Black / White mode</button><div class="user"><b>'+esc(a.name)+'</b><br>'+esc(a.email)+'<br>'+esc(a.phone)+'<button class="logout" onclick="logout()">↪ Log out</button></div></aside><main class="main"><header class="top"><b>Closed AI</b><button class="theme" onclick="toggleTheme()">◐</button></header><div class="content"><div id="page" class="home"></div></div><div class="composer-wrap"><div class="composer"><input id="prompt" placeholder="Message Closed AI..." onkeydown="if(event.key===\'Enter\')send()"><button class="send" onclick="send()">↑</button></div></div></main></div>';applyTheme();home()}
